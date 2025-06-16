@@ -36,7 +36,7 @@ export default function Home({ headers, data }) {
 }
 
 export async function getStaticProps() {
-  const sheetId = '2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA';
+  const sheetId = '1UyY6GH02knNVL2CNw-80nNlXAm0hzCyBpqnWxro6AeU';
   const sheetName = 'Sæson3';
   const url = `https://docs.google.com/spreadsheets/d/e/${sheetId}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json`;
 
