@@ -1,69 +1,53 @@
-// pages/index.js
+/* styles.module.css */
 
-import { useEffect, useState } from 'react';
-import styles from '../styles.module.css';
-import Dropdown from '../components/Dropdown';
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #f9f9f9;
+}
 
-// Sheet-URLs til public TSV-data for hver sæson
-const sheetUrls = {
-  Sæson2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1329055483&single=true&output=tsv',
-  Sæson3: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1721353232&single=true&output=tsv',
-  Sæson4: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=101621910&single=true&output=tsv',
-};
+.title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
 
-export default function Home() {
-  const [selectedSeason, setSelectedSeason] = useState('Sæson3');
-  const [headers, setHeaders] = useState([]);
-  const [rows, setRows] = useState([]);
+.dropdown {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(sheetUrls[selectedSeason]);
-      const text = await res.text();
-      const lines = text.split('\n');
+.tableWrapper {
+  overflow-x: auto;
+}
 
-      const parsed = lines
-        .map(line => line.split('\t'))
-        .map(row => row.slice(2, 8)) // kun kolonne C–H
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
 
-      const headers = parsed[0]; // C2:H2
-      const dataRows = parsed.slice(1).filter(row => row[0] !== ''); // undgå tomme rækker
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
 
-      setHeaders(headers);
-      setRows(dataRows);
-    };
+.table th {
+  background-color: #f1f1f1;
+  font-weight: bold;
+}
 
-    fetchData();
-  }, [selectedSeason]);
+.table tr:nth-child(even) {
+  background-color: #fafafa;
+}
 
-  return (
-    <main className={styles.container}>
-      <h1 className={styles.title}>Tipsklubben – {selectedSeason}</h1>
-
-      <div className={styles.dropdown}>
-        <Dropdown selectedSeason={selectedSeason} onChange={setSelectedSeason} />
-      </div>
-
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              {headers.map((h, i) => (
-                <th key={i}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <tr key={i} className={row[0].toLowerCase() === 'total' ? styles.totalRow : ''}>
-                {row.map((cell, j) => (
-                  <td key={j}>{cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </main>
-  );
+.table tr:last-child td {
+  font-weight: bold;
+  background-color: #f1f1f1;
 }
