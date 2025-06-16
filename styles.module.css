@@ -1,76 +1,66 @@
+/* === Layout og struktur === */
 .container {
-  padding: 2rem;
+  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
   background: #f9f9f9;
   font-family: system-ui, sans-serif;
 }
 
-h1 {
+/* === Overskrifter === */
+.title {
+  font-size: 2rem;
   text-align: center;
-  margin-bottom: 1rem;
+  color: #222;
+  margin-bottom: 1.5rem;
 }
 
-.dropdown {
+/* === Dropdown-menu === */
+.dropdown,
+.select {
   margin: 1rem auto;
   display: flex;
   justify-content: center;
+  font-size: 1rem;
+  padding: 0.5rem;
 }
 
-.table-wrapper {
+/* === Tabel-wrapper (scroll ved behov) === */
+.tableWrapper {
   overflow-x: auto;
+  max-width: 100%;
 }
 
-table {
+/* === Tabel === */
+.table {
   width: 100%;
   border-collapse: collapse;
   margin: 0 auto;
   background-color: white;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
-}
-
-th, td {
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  border: 1px solid #ccc;
-  white-space: nowrap;
-}
-
-th {
-  background-color: #eee;
-  font-weight: bold;
-}
-.container {
-  padding: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.title {
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.select {
-  margin: 1rem 0;
-  font-size: 1rem;
-  padding: 0.5rem;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
   margin-bottom: 2rem;
 }
 
+/* === Tabelceller === */
 .table th,
 .table td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: center;
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
+.table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* === Responsiv tilpasning === */
 @media (max-width: 600px) {
-  .table {
+  .table th,
+  .table td {
+    padding: 0.5rem;
     font-size: 0.8rem;
   }
 
