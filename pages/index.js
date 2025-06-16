@@ -23,8 +23,8 @@ export default function Home() {
 
       const cleaned = lines
         .map(line => line.split('\t'))
-        .filter((row, index) => index >= 2 && index <= 7) // rækker 2–7 (excl. total i række 8)
-        .map(row => row.slice(2, 8)); // kolonner C–H (0-indekseret: 2 til 7 excl.)
+        .filter((row, index) => index >= 2 && index <= 7) // rækker 2–7 (Incl. total i række 8)
+        .map(row => row.slice(3, 8)); // kolonner C–H (0-indekseret: 2 til 7 excl.)
 
       setRows(cleaned);
     };
