@@ -1,7 +1,7 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true
-}
+};
 
-module.exports = nextConfig
-"Tilføjer Next.js config"
+module.exports = nextConfig;
