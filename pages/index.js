@@ -1,3 +1,4 @@
+import styles from '../styles.module.css';
 // pages/index.js
 
 import { useEffect, useState } from 'react';
