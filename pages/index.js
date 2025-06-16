@@ -22,9 +22,10 @@ export default function Home() {
       const text = await res.text();
       const lines = text.split('\n');
       const cleaned = lines
-        .map(line => line.split('\t'))
-        .filter(row => row.length >= 6 && row[0] !== ''); // Mindst 6 kolonner og ikke tom
-
+  .map(line => line.split('\t'))
+  .filter(row => row.length >= 8 && row[2] !== '');
+ // Række 2-8
+      
       setRows(cleaned);
     };
 
