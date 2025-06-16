@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import styles from '../styles.module.css';
 import Dropdown from '../components/Dropdown';
 
-// URLs til de forskellige sæsoner – offentliggjorte som TSV
 const sheetUrls = {
   Sæson2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1329055483&single=true&output=tsv',
   Sæson3: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1721353232&single=true&output=tsv',
@@ -23,8 +22,8 @@ export default function Home() {
 
       const cleaned = lines
         .map(line => line.split('\t'))
-        .filter((row, index) => index >= 2 && index <= 7) // rækker 2–7 (Incl. total i række 8)
-        .map(row => row.slice(3, 8)); // kolonner C–H (0-indekseret: 2 til 7 excl.)
+        .filter((row, index) => index >= 1 && index <= 7) // rækker 2–8 (inkl. Total)
+        .map(row => row.slice(2, 8)); // kolonner C–H
 
       setRows(cleaned);
     };
@@ -54,7 +53,7 @@ export default function Home() {
           </thead>
           <tbody>
             {rows.map((row, i) => (
-              <tr key={i}>
+              <tr key={i} className={row[0].toLowerCase() === 'total' ? styles.totalRow : ''}>
                 <td>{row[0]}</td>
                 <td>{row[1]}</td>
                 <td>{row[2]}</td>
