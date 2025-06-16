@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import styles from '../styles.module.css';
 import Dropdown from '../components/Dropdown';
 
+// Sheet-URLs til public TSV-data for hver sæson
 const sheetUrls = {
   Sæson2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1329055483&single=true&output=tsv',
   Sæson3: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1721353232&single=true&output=tsv',
-  Sæson4: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=101621910&single=true&output=tsv'
+  Sæson4: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=101621910&single=true&output=tsv',
 };
 
 export default function Home() {
@@ -22,7 +23,7 @@ export default function Home() {
 
       const cleaned = lines
         .map(line => line.split('\t'))
-        .filter((row, index) => index >= 1 && index <= 7) // rækker 2–8 (inkl. Total)
+        .filter((row, index) => index >= 1 && index <= 7) // række 2–8 fra Sheets
         .map(row => row.slice(2, 8)); // kolonner C–H
 
       setRows(cleaned);
