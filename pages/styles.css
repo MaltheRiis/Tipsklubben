@@ -1,71 +1,69 @@
-body {
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  padding: 2rem;
-  margin: 0;
-  background: #f9f9f9;
+// pages/index.js
+
+import { useEffect, useState } from 'react';
+import styles from '../styles.module.css';
+import Dropdown from '../components/Dropdown';
+
+// Sheet-URLs til public TSV-data for hver sæson
+const sheetUrls = {
+  Sæson2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1329055483&single=true&output=tsv',
+  Sæson3: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1721353232&single=true&output=tsv',
+  Sæson4: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=101621910&single=true&output=tsv',
+};
+
+export default function Home() {
+  const [selectedSeason, setSelectedSeason] = useState('Sæson3');
+  const [headers, setHeaders] = useState([]);
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(sheetUrls[selectedSeason]);
+      const text = await res.text();
+      const lines = text.split('\n');
+
+      const parsed = lines
+        .map(line => line.split('\t'))
+        .map(row => row.slice(2, 8)) // kun kolonne C–H
+
+      const headers = parsed[0]; // C2:H2
+      const dataRows = parsed.slice(1).filter(row => row[0] !== ''); // undgå tomme rækker
+
+      setHeaders(headers);
+      setRows(dataRows);
+    };
+
+    fetchData();
+  }, [selectedSeason]);
+
+  return (
+    <main className={styles.container}>
+      <h1 className={styles.title}>Tipsklubben – {selectedSeason}</h1>
+
+      <div className={styles.dropdown}>
+        <Dropdown selectedSeason={selectedSeason} onChange={setSelectedSeason} />
+      </div>
+
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              {headers.map((h, i) => (
+                <th key={i}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i} className={row[0].toLowerCase() === 'total' ? styles.totalRow : ''}>
+                {row.map((cell, j) => (
+                  <td key={j}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  );
 }
-
-h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  overflow-x: auto;
-  font-size: 0.9rem;
-}
-
-th, td {
-  padding: 0.75rem;
-  text-align: left;
-  border: 1px solid #ddd;
-  white-space: nowrap;
-}
-
-th {
-  background-color: #f0f0f0;
-}
-
-tr:nth-child(even) {
-  background-color: #ffffff;
-}
-
-tr:nth-child(odd) {
-  background-color: #f6f6f6;
-}
-
-@media (max-width: 768px) {
-  table {
-    font-size: 0.8rem;
-    display: block;
-    overflow-x: scroll;
-  }
-}
-@media (max-width: 768px) {
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  th, td {
-    font-size: 0.9rem;
-    padding: 0.5rem;
-  }
-
-  body {
-    padding: 1rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-}
-.totalRow {
-  background-color: #f3f3f3;
-  font-weight: bold;
-}
-
