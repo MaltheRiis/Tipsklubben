@@ -13,6 +13,7 @@ const sheetUrls = {
 
 export default function Home() {
   const [selectedSeason, setSelectedSeason] = useState('Sæson3');
+  const [headers, setHeaders] = useState([]);
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -21,12 +22,15 @@ export default function Home() {
       const text = await res.text();
       const lines = text.split('\n');
 
-      const cleaned = lines
+      const parsed = lines
         .map(line => line.split('\t'))
-        .filter((row, index) => index >= 1 && index <= 7) // række 2–8 fra Sheets
-        .map(row => row.slice(2, 8)); // kolonner C–H
+        .map(row => row.slice(2, 8)) // kun kolonne C–H
 
-      setRows(cleaned);
+      const headers = parsed[0]; // C2:H2
+      const dataRows = parsed.slice(1).filter(row => row[0] !== ''); // undgå tomme rækker
+
+      setHeaders(headers);
+      setRows(dataRows);
     };
 
     fetchData();
@@ -44,23 +48,17 @@ export default function Home() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Navn</th>
-              <th>Indskud</th>
-              <th>Ekstra Indskud</th>
-              <th>Ordinær gevinst</th>
-              <th>Ekstra gevinst</th>
-              <th>Balance</th>
+              {headers.map((h, i) => (
+                <th key={i}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, i) => (
               <tr key={i} className={row[0].toLowerCase() === 'total' ? styles.totalRow : ''}>
-                <td>{row[0]}</td>
-                <td>{row[1]}</td>
-                <td>{row[2]}</td>
-                <td>{row[3]}</td>
-                <td>{row[4]}</td>
-                <td>{row[5]}</td>
+                {row.map((cell, j) => (
+                  <td key={j}>{cell}</td>
+                ))}
               </tr>
             ))}
           </tbody>
