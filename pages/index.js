@@ -22,9 +22,9 @@ export default function Home() {
       const text = await res.text();
       const lines = text.split('\n');
       const cleaned = lines
-  .map(line => line.split('\t'))
-  .filter(row => row.length >= 8 && row[2] !== '');
- // Række 2-8
+  .slice(1, 6) // Række 2 til 7 (JavaScript index starter ved 0)
+  .map(line => line.split('\t'));
+
       
       setRows(cleaned);
     };
