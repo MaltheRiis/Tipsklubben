@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <main style={{ padding: 20 }}>
-      <h1>Tipsklubben – Sæson 3</h1>
+      <h1 className={styles.title}>Tipsklubben – Sæson 3</h1>
       <table border="1" cellPadding="8">
         <thead>
           <tr>
