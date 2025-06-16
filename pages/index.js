@@ -1,3 +1,4 @@
+// Hjemmesidens brugerflade
 export default function Home({ headers, data }) {
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
@@ -32,23 +33,32 @@ export default function Home({ headers, data }) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }
 
+// Datahentning fra Google Sheets (sker før siden vises)
 export async function getStaticProps() {
+  // Sheet ID fra dit link (https://docs.google.com/spreadsheets/d/ID/edit)
   const sheetId = '1UyY6GH02knNVL2CNw-80nNlXAm0hzCyBpqnWxro6AeU';
+
+  // Fanenavn i arket (skal matche præcist)
   const sheetName = 'Sæson3';
-  const url = `https://docs.google.com/spreadsheets/d/e/${sheetId}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json`;
+
+  // Byg URL til at hente data som JSON fra Google
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json`;
 
   const res = await fetch(url);
   const text = await res.text();
 
+  // Google pakker deres JSON ind – vi pakker det ud her
   const json = JSON.parse(
     text.match(/google\.visualization\.Query\.setResponse\((.*)\)/s)[1]
   );
 
+  // Træk kolonnenavne og rækker ud
   const { cols, rows } = json.table;
   const headers = cols.map(c => c.label);
+
   const data = rows.map(r => {
     const obj = {};
     r.c.forEach((cell, i) => {
@@ -59,6 +69,6 @@ export async function getStaticProps() {
 
   return {
     props: { headers, data },
-    revalidate: 60, // Opdater hver 60. sekund
+    revalidate: 60, // Tjek for opdateringer hvert 60. sekund
   };
 }
