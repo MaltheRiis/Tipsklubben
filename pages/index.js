@@ -15,28 +15,23 @@ export default function Home() {
   const [selectedSeason, setSelectedSeason] = useState('Sæson3');
   const [rows, setRows] = useState([]);
 
-  useEffect(() => {
+ useEffect(() => {
   const fetchData = async () => {
-  const res = await fetch(sheetUrls[selectedSeason]);
-  const text = await res.text();
-  const lines = text.split('\n');
+    const res = await fetch(sheetUrls[selectedSeason]);
+    const text = await res.text();
+    const lines = text.split('\n');
 
-  const cleaned = lines
-    .map(line => line.split('\t'))
-    .filter((row, index) => index >= 1 && index <= 7) // kun rækker 2–8
-    .map(row => row.slice(2, 8)); // kun kolonner C–H
+    const cleaned = lines
+      .map(line => line.split('\t'))
+      .filter((row, index) => index >= 1 && index <= 7) // kun rækker 2–8
+      .map(row => row.slice(2, 8)); // kun kolonner C–H
 
-  setRows(cleaned);
-};
+    setRows(cleaned);
+  };
 
+  fetchData();
+}, [selectedSeason]);
 
-
-      
-      setRows(cleaned);
-    };
-
-    fetchData();
-  }, [selectedSeason]);
 
   return (
     <main className={styles.container}>
