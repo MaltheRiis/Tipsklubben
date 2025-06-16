@@ -50,9 +50,7 @@ export default function Home() {
           </thead>
           <tbody>
             {rows.map((row, i) => (
-              <tr
-                key={i}
-                className={row[0]?.trim().toLowerCase() === 'total' ? styles.totalRow : ''}>
+          <tr key={i} className={row[0]?.trim().toLowerCase() === 'total' ? styles.totalRow : ''}>
 
               >
                 {row.map((cell, j) => (
