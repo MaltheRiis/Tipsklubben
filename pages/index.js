@@ -16,14 +16,18 @@ export default function Home() {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const url = sheetUrls[selectedSeason];
-      const res = await fetch(url);
-      const text = await res.text();
-      const lines = text.split('\n');
-      const cleaned = lines
-  .slice(1, 7) // henter kun række 2 til 7 (summering)
-  .map(line => line.split('\t'));
+   const fetchData = async () => {
+  const res = await fetch(sheetUrls[selectedSeason]);
+  const text = await res.text();
+  const lines = text.split('\n');
+
+  const cleaned = lines
+    .slice(1, 8) // Række 2 til 8 inkl. overskrifter
+    .map(line => line.split('\t').slice(2, 8)); // Kolonne C til H
+
+  setRows(cleaned);
+};
+
 
       
       setRows(cleaned);
