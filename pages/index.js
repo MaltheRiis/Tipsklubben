@@ -16,25 +16,28 @@ export default function Home() {
   const [headers, setHeaders] = useState([]);
   const [rows, setRows] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(sheetUrls[selectedSeason]);
-      const text = await res.text();
-      const lines = text.split('\n');
+useEffect(() => {
+  const fetchData = async () => {
+    const res = await fetch(sheetUrls[selectedSeason]);
+    const text = await res.text();
+    const lines = text.split('\n');
 
-      const parsed = lines
-        .map(line => line.split('\t'))
-        .map(row => row.slice(2, 8)) // kun kolonne C–H
+    const parsed = lines
+      .map(line => line.split('\t'))
+      .map(row => row.slice(2, 8)); // kolonne C–H
 
-      const headers = parsed[0]; // C2:H2
-      const dataRows = parsed.slice(1).filter(row => row[0] !== ''); // undgå tomme rækker
+    const headers = parsed[0]; // række 2 – overskrifter
+    const dataRows = parsed
+      .slice(1) // alle rækker efter række 2
+      .filter(row => row[0] !== '' && row[0] !== headers[0]); // filtrér tomme og gentagede overskrifter
 
-      setHeaders(headers);
-      setRows(dataRows);
-    };
+    setHeaders(headers);
+    setRows(dataRows);
+  };
 
-    fetchData();
-  }, [selectedSeason]);
+  fetchData();
+}, [selectedSeason]);
+
 
   return (
     <main className={styles.container}>
