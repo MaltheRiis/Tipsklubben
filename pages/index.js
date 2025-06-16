@@ -52,7 +52,8 @@ export default function Home() {
             {rows.map((row, i) => (
               <tr
                 key={i}
-                className={row[0]?.trim().toLowerCase() === 'total' ? styles.totalRow : ''}
+                className={row[0]?.trim().toLowerCase() === 'total' ? styles.totalRow : ''}>
+
               >
                 {row.map((cell, j) => (
                   <td key={j}>{cell}</td>
