@@ -22,7 +22,7 @@ export default function Home() {
       const text = await res.text();
       const lines = text.split('\n');
       const cleaned = lines
-  .slice(1, 6) // Række 2 til 7 (JavaScript index starter ved 0)
+  .slice(1, 7) // henter kun række 2 til 7 (summering)
   .map(line => line.split('\t'));
 
       
