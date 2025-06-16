@@ -1,74 +1,56 @@
-// Hjemmesidens brugerflade
-export default function Home({ headers, data }) {
-  return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Tipsklubben</h1>
-      <p><em>Forbundne, forpligtet, for Tipsklubben</em></p>
-      <h2>Sæson 3</h2>
+// pages/index.js
 
-      <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '1rem' }}>
+import { useEffect, useState } from 'react';
+
+export default function Home() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWlPXh7d5WrItwa9eraRPoPyyDNstwxA/pub?gid=1721353232&single=true&output=tsv'
+      );
+      const text = await res.text();
+      const lines = text.split('\n');
+      const cleaned = lines
+        .map(line => line.split('\t'))
+        .filter(row => row.length >= 8 && row[2] !== ''); // min 8 kolonner, og spiller er udfyldt
+
+      setRows(cleaned);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <main style={{ padding: 20 }}>
+      <h1>Tipsklubben – Sæson 3</h1>
+      <table border="1" cellPadding="8">
         <thead>
           <tr>
-            {headers.map(h => (
-              <th key={h} style={{
-                border: '1px solid #ccc',
-                padding: '0.5rem',
-                background: '#ddd',
-                textAlign: 'left'
-              }}>{h}</th>
-            ))}
+            <th>Uge</th>
+            <th>Navn</th>
+            <th>Indskud</th>
+            <th>Ekstra</th>
+            <th>Gevinst</th>
+            <th>Ekstra gevinst</th>
+            <th>Balance</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((row, i) => (
+          {rows.map((row, i) => (
             <tr key={i}>
-              {headers.map(h => (
-                <td key={h} style={{
-                  border: '1px solid #ccc',
-                  padding: '0.5rem'
-                }}>{row[h]}</td>
-              ))}
+              <td>{row[1]}</td> {/* Uge */}
+              <td>{row[2]}</td> {/* Navn */}
+              <td>{row[3]}</td> {/* Indskud */}
+              <td>{row[4]}</td> {/* Ekstra indskud */}
+              <td>{row[5]}</td> {/* Gevinst */}
+              <td>{row[6]}</td> {/* Ekstra gevinst */}
+              <td>{row[7]}</td> {/* Balance */}
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
+    </main>
   );
-}
-
-// Datahentning fra Google Sheets (sker før siden vises)
-export async function getStaticProps() {
-  // Sheet ID fra dit link (https://docs.google.com/spreadsheets/d/ID/edit)
-  const sheetId = '1UyY6GH02knNVL2CNw-80nNlXAm0hzCyBpqnWxro6AeU';
-
-  // Fanenavn i arket (skal matche præcist)
-  const sheetName = 'Sæson3';
-
-  // Byg URL til at hente data som JSON fra Google
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json`;
-
-  const res = await fetch(url);
-  const text = await res.text();
-
-  // Google pakker deres JSON ind – vi pakker det ud her
-  const json = JSON.parse(
-    text.match(/google\.visualization\.Query\.setResponse\((.*)\)/s)[1]
-  );
-
-  // Træk kolonnenavne og rækker ud
-  const { cols, rows } = json.table;
-  const headers = cols.map(c => c.label);
-
-  const data = rows.map(r => {
-    const obj = {};
-    r.c.forEach((cell, i) => {
-      obj[headers[i]] = cell && cell.v !== null ? cell.v : '';
-    });
-    return obj;
-  });
-
-  return {
-    props: { headers, data },
-    revalidate: 60, // Tjek for opdateringer hvert 60. sekund
-  };
 }
