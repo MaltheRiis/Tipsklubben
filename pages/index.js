@@ -1,34 +1,46 @@
+// IMPORTER STYLES & REACT
 import styles from '../styles.module.css';
-
-
-// pages/index.js
-
 import { useEffect, useState } from 'react';
 
+
+// START KOMPONENT – Forsiden af din hjemmeside
 export default function Home() {
+  // STATE: Her gemmes rækkerne fra Google Sheet
   const [rows, setRows] = useState([]);
 
+  // HENT DATA FRA GOOGLE SHEET
   useEffect(() => {
     const fetchData = async () => {
+      // Hent TSV-data fra offentlig Google Sheet (fanen Sæson3)
       const res = await fetch(
         'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWlPXh7d5WrItwa9eraRPoPyyDNstwxA/pub?gid=1721353232&single=true&output=tsv'
       );
+
+      // Læs svaret som tekst og split det i linjer
       const text = await res.text();
       const lines = text.split('\n');
+
+      // Del hver linje op i celler og filtrer tomme eller ugyldige rækker fra
       const cleaned = lines
         .map(line => line.split('\t'))
-        .filter(row => row.length >= 8 && row[2] !== ''); // min 8 kolonner, og spiller er udfyldt
+        .filter(row => row.length >= 8 && row[2] !== '');
 
+      // Gem data i state
       setRows(cleaned);
     };
 
     fetchData();
   }, []);
 
+
+  // HTML-STRUKTUR: Visning af siden
   return (
     <main style={{ padding: 20 }}>
+      {/* Titel */}
       <h1 className={styles.title}>Tipsklubben – Sæson 3</h1>
-      <table border="1" cellPadding="8">
+
+      {/* TABEL – vis data fra Google Sheet */}
+      <table border="1" cellPadding="8" className={styles.table}>
         <thead>
           <tr>
             <th>Uge</th>
@@ -41,6 +53,7 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
+          {/* Gennemgå rækkerne og vis dem i tabellen */}
           {rows.map((row, i) => (
             <tr key={i}>
               <td>{row[1]}</td> {/* Uge */}
