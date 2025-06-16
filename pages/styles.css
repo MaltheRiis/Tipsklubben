@@ -47,12 +47,13 @@
   background-color: #fafafa;
 }
 
+/* Fjern denne så vi ikke får konflikt med totalRow */
 .table tr:last-child td {
-  font-weight: bold;
-  background-color: #f1f1f1;
+  /* Fjernet tidligere styling */
 }
-.totalRow {
+
+/* Total-række – tydelig og prioriteret */
+.totalRow td {
   font-weight: bold;
   background-color: #f0f8f4;
 }
-
