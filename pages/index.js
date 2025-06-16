@@ -9,7 +9,7 @@ const sheetUrls = {
 };
 
 export default function Home() {
-  const [selectedSeason, setSelectedSeason] = useState('Sæson3');
+  const [selectedSeason, setSelectedSeason] = useState('Sæson2');
   const [headers, setHeaders] = useState([]);
   const [rows, setRows] = useState([]);
 
