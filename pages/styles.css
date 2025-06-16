@@ -65,6 +65,7 @@ tr:nth-child(odd) {
   }
 }
 .totalRow {
-  background-color: #f0f0f0;
+  background-color: #f3f3f3;
   font-weight: bold;
 }
+
