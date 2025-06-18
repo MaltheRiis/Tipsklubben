@@ -75,4 +75,120 @@ export default function Home() {
   function getOverblik() {
     const navne = Array.from(new Set(filtered.map((r) => r.Ansvarlig))).filter(Boolean);
     return navne.map((navn) => {
-      const rækker =
+      const rækker = filtered.filter((r) => r.Ansvarlig === navn);
+      return {
+        Ansvarlig: navn,
+        Indskud: rækker.reduce((a, r) => a + parseDKK(r["Indskud"]), 0),
+        EkstraIndskud: rækker.reduce((a, r) => a + parseDKK(r["Ekstra Indskud"]), 0),
+        OrdinærGevinst: rækker.reduce((a, r) => a + parseDKK(r["Ordinær gevinst"]), 0),
+        EkstraGevinst: rækker.reduce((a, r) => a + parseDKK(r["Ekstra gevinst"]), 0),
+        Balance: rækker.reduce((a, r) => a + parseDKK(r["Balance"]), 0),
+      };
+    });
+  }
+
+  const overblik = getOverblik();
+
+  return (
+    <main className={styles.container}>
+      <h1 className={styles.title}>Tipsklubben – Overblik</h1>
+
+      <div className={styles.filters} style={{ display: "flex", gap: 20, marginBottom: 32 }}>
+        <label>
+          Sæson:{" "}
+          <select value={selectedSæson} onChange={(e) => setSelectedSæson(e.target.value)}>
+            <option value="Alle">Alle</option>
+            {sæsoner.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Ansvarlig:{" "}
+          <select value={selectedAnsvarlig} onChange={(e) => setSelectedAnsvarlig(e.target.value)}>
+            <option value="Alle">Alle</option>
+            {ansvarlige.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <h2>Opsummering pr. ansvarlig</h2>
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Navn</th>
+              <th>Indskud</th>
+              <th>Ekstra Indskud</th>
+              <th>Ordinær gevinst</th>
+              <th>Ekstra gevinst</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {overblik.map((row) => (
+              <tr key={row.Ansvarlig}>
+                <td>{row.Ansvarlig}</td>
+                <td>{row.Indskud.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</td>
+                <td>{row.EkstraIndskud.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</td>
+                <td>{row.OrdinærGevinst.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</td>
+                <td>{row.EkstraGevinst.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</td>
+                <td>{row.Balance.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</td>
+              </tr>
+            ))}
+            {overblik.length > 0 && (
+              <tr className={styles.totalRow}>
+                <td style={{ fontWeight: "bold" }}>Total</td>
+                <td>{sum("Indskud")}</td>
+                <td>{sum("Ekstra Indskud")}</td>
+                <td>{sum("Ordinær gevinst")}</td>
+                <td>{sum("Ekstra gevinst")}</td>
+                <td>{sum("Balance")}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 style={{ marginTop: 48 }}>Alle registreringer</h2>
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Sæson</th>
+              <th>Dato</th>
+              <th>Uge</th>
+              <th>Ansvarlig</th>
+              <th>Indskud</th>
+              <th>Ekstra Indskud</th>
+              <th>Ordinær gevinst</th>
+              <th>Ekstra gevinst</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((row, i) => (
+              <tr key={i}>
+                <td>{row.Sæson}</td>
+                <td>{row.Dato}</td>
+                <td>{row.Uge}</td>
+                <td>{row.Ansvarlig}</td>
+                <td>{row["Indskud"]}</td>
+                <td>{row["Ekstra Indskud"]}</td>
+                <td>{row["Ordinær gevinst"]}</td>
+                <td>{row["Ekstra gevinst"]}</td>
+                <td>{row["Balance"]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  );
+}
