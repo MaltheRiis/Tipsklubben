@@ -1,118 +1,78 @@
-// GAMMEL KODE GEMT TILBAGEUP:
-// ----------------------------------------
-// import { useEffect, useState } from 'react';
-// import styles from '../styles.module.css';
-// import Dropdown from '../components/Dropdown';
-// const sheetUrls = {
-//   Sæson2: '...',
-//   Sæson3: '...',
-//   Sæson4: '...'
-// };
-// export default function Home() {
-//   const [selectedSeason, setSelectedSeason] = useState('Sæson3');
-//   const [rows, setRows] = useState([]);
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const res = await fetch(sheetUrls[selectedSeason]);
-//       const text = await res.text();
-//       const lines = text.split('\n');
-//       const cleaned = lines
-//         .map(line => line.split('\t'))
-//         .filter((row, index) => index >= 1 && index <= 7)
-//         .map(row => row.slice(2, 8));
-//       setRows(cleaned);
-//     };
-//     fetchData();
-//   }, [selectedSeason]);
-//   return (...)
-// }
+// pages/index.js
 
-// NY VERSION MED FILTRERING OG TOTALS:
+import { useEffect, useState } from "react";
+import styles from "../styles.module.css";
 
-import { useEffect, useState } from 'react';
-import styles from '../styles.module.css';
+// Link til Dataark som TSV (output=tsv!)
+const SHEET_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=1506638003&single=true&output=tsv";
 
-const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRLuzIhpLhkGGSJSVBJfIIT1WTJkKT4mmFYQlwJTvUeE9AekWIPXh7d5Wrltwa9eraRPoPyyDNstwxA/pub?gid=765343490&single=true&output=tsv';
+// Funktion til at parse TSV til et array af objekter
+function parseData(tsv) {
+  const lines = tsv.trim().split("\n");
+  // Starter fra række 13 = index 12 (0-baseret)
+  const dataLines = lines.slice(12);
+  if (dataLines.length < 2) return [];
+  const headers = dataLines[0].split("\t");
+  return dataLines.slice(1).map((line) => {
+    const row = line.split("\t");
+    // Brug headers til at lave key/value-par
+    const obj = {};
+    headers.forEach((header, i) => {
+      obj[header] = row[i] || "";
+    });
+    return obj;
+  });
+}
+
+// Funktion til at rense og konvertere penge-beløb til tal
+function parseDKK(val) {
+  if (!val) return 0;
+  // Fjerner "kr", ".", mellemrum osv.
+  return (
+    parseFloat(
+      val
+        .replace(/\s*kr\.?/gi, "")
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .replace(/\s/g, "")
+    ) || 0
+  );
+}
 
 export default function Home() {
   const [data, setData] = useState([]);
-  const [selectedSeason, setSelectedSeason] = useState('1');
-  const [seasons, setSeasons] = useState([]);
+  const [selectedSæson, setSelectedSæson] = useState("Alle");
+  const [selectedAnsvarlig, setSelectedAnsvarlig] = useState("Alle");
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(sheetUrl);
-      const text = await res.text();
-      const lines = text.split('\n').map(l => l.split('\t'));
-      const cleaned = lines.filter(row => row.length >= 10);
-
-      const uniqueSeasons = [...new Set(cleaned.map(row => row[0]))];
-      setSeasons(uniqueSeasons);
-      setData(cleaned);
-    };
-    fetchData();
+    fetch(SHEET_URL)
+      .then((res) => res.text())
+      .then((tsv) => setData(parseData(tsv)));
   }, []);
 
-  const parseKr = (text) => parseFloat(text.replace('kr', '').replaceAll('.', '').replace(',', '.')) || 0;
-  const formatKr = (val) => val.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' });
+  // Udtræk unikke sæsoner/ansvarlige til dropdowns
+  const sæsoner = Array.from(new Set(data.map((d) => d.Sæson))).filter(Boolean);
+  const ansvarlige = Array.from(new Set(data.map((d) => d.Ansvarlig))).filter(Boolean);
 
-  const filtered = data.filter(row => row[0] === selectedSeason);
-
-  const totals = filtered.reduce((acc, row) => {
-    acc.indskud += parseKr(row[4]);
-    acc.ekstra += parseKr(row[5]);
-    acc.ordinær += parseKr(row[6]);
-    acc.ekstraGevinst += parseKr(row[7]);
-    acc.balance += parseKr(row[8]);
-    return acc;
-  }, { indskud: 0, ekstra: 0, ordinær: 0, ekstraGevinst: 0, balance: 0 });
-
-  return (
-    <main className={styles.container}>
-      <h1 className={styles.title}>Tipsklubben – Sæson {selectedSeason}</h1>
-
-      <div className={styles.dropdown}>
-        <select value={selectedSeason} onChange={e => setSelectedSeason(e.target.value)}>
-          {seasons.map(season => (
-            <option key={season} value={season}>Sæson {season}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Navn</th>
-              <th>Indskud</th>
-              <th>Ekstra Indskud</th>
-              <th>Ordinær gevinst</th>
-              <th>Ekstra gevinst</th>
-              <th>Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((row, i) => (
-              <tr key={i}>
-                <td>{row[3]}</td>
-                <td>{row[4]}</td>
-                <td>{row[5]}</td>
-                <td>{row[6]}</td>
-                <td>{row[7]}</td>
-                <td>{row[8]}</td>
-              </tr>
-            ))}
-            <tr className={styles.totalRow}>
-              <td><strong>Total</strong></td>
-              <td><strong>{formatKr(totals.indskud)}</strong></td>
-              <td><strong>{formatKr(totals.ekstra)}</strong></td>
-              <td><strong>{formatKr(totals.ordinær)}</strong></td>
-              <td><strong>{formatKr(totals.ekstraGevinst)}</strong></td>
-              <td><strong>{formatKr(totals.balance)}</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </main>
+  // Filtrér data på valg
+  const filtered = data.filter(
+    (row) =>
+      (selectedSæson === "Alle" || row.Sæson === selectedSæson) &&
+      (selectedAnsvarlig === "Alle" || row.Ansvarlig === selectedAnsvarlig)
   );
-}
+
+  // Summeringer til overblik
+  function sum(field) {
+    return filtered.reduce((acc, row) => acc + parseDKK(row[field]), 0).toLocaleString("da-DK", {
+      style: "currency",
+      currency: "DKK",
+      minimumFractionDigits: 2,
+    });
+  }
+
+  // Overblik pr. ansvarlig (til total-oversigten)
+  function getOverblik() {
+    const navne = Array.from(new Set(filtered.map((r) => r.Ansvarlig))).filter(Boolean);
+    return navne.map((navn) => {
+      const rækker =
